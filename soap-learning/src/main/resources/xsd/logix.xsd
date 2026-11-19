@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:bnk="http://www.github.com/io/github/soap/banking"
+        targetNamespace="http://www.github.com/io/github/soap/banking"
+        elementFormDefault="qualified">
+
+    <xsd:simpleType name="AccountType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="SAVINGS"/>
+            <xsd:enumeration value="CURRENT"/>
+            <xsd:enumeration value="FIXED_DEPOSIT"/>
+            <xsd:enumeration value="RECURRING_DEPOSIT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="TransactionType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="CREDIT"/>
+            <xsd:enumeration value="DEBIT"/>
+            <xsd:enumeration value="DEPOSIT"/>
+            <xsd:enumeration value="WITHDRAWAL"/>
+            <xsd:enumeration value="TRANSFER_IN"/>
+            <xsd:enumeration value="TRANSFER_OUT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="CurrencyCode">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[A-Z]{3}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="PositiveDecimal">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:minExclusive value="0"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="NonNegativeDecimal">
+        <xsd:restriction base="xsd:decimal">
+            <xsd:minInclusive value="0"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="AccountStatus">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ACTIVE"/>
+            <xsd:enumeration value="INACTIVE"/>
+            <xsd:enumeration value="SUSPENDED"/>
+            <xsd:enumeration value="CLOSED"/>
+            <xsd:enumeration value="DORMANT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:element name="CreateAccountRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="customerName" type="xsd:string"/>
+                <xsd:element name="email" type="xsd:string"/>
+                <xsd:element name="mobileNumber" type="xsd:string"/>
+                <xsd:element name="accountType" type="bnk:AccountType"/>
+                <xsd:element name="initialBalance" type="bnk:NonNegativeDecimal"/>
+                <xsd:element name="currency" type="bnk:CurrencyCode" default="INR" minOccurs="0"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="CreateAccountResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="accountNumber" type="xsd:string"/>
+                <xsd:element name="customerName" type="xsd:string"/>
+                <xsd:element name="email" type="xsd:string"/>
+                <xsd:element name="mobileNumber" type="xsd:string"/>
+                <xsd:element name="accountType" type="bnk:AccountType"/>
+                <xsd:element name="balance" type="bnk:NonNegativeDecimal"/>
+                <xsd:element name="currency" type="bnk:CurrencyCode"/>
+                <xsd:element name="accountStatus" type="bnk:AccountStatus"/>
+                <xsd:element name="status" type="xsd:string"/>
+                <xsd:element name="message" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="CreditAccountRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="accountNumber" type="xsd:string"/>
+                <xsd:element name="amount" type="bnk:PositiveDecimal"/>
+                <xsd:element name="transactionReference" type="xsd:string"/>
+                <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="CreditAccountResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="accountNumber" type="xsd:string"/>
+                <xsd:element name="transactionId" type="xsd:string"/>
+                <xsd:element name="transactionReference" type="xsd:string"/>
+                <xsd:element name="transactionType" type="bnk:TransactionType"/>
+                <xsd:element name="creditedAmount" type="bnk:PositiveDecimal"/>
+                <xsd:element name="availableBalance" type="bnk:NonNegativeDecimal"/>
+                <xsd:element name="currency" type="bnk:CurrencyCode"/>
+                <xsd:element name="transactionTimestamp" type="xsd:dateTime"/>
+                <xsd:element name="status" type="xsd:string"/>
+                <xsd:element name="message" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="DebitAccountRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="accountNumber" type="xsd:string"/>
+                <xsd:element name="amount" type="bnk:PositiveDecimal"/>
+                <xsd:element name="transactionReference" type="xsd:string"/>
+                <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="DebitAccountResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="accountNumber" type="xsd:string"/>
+                <xsd:element name="transactionId" type="xsd:string"/>
+                <xsd:element name="transactionReference" type="xsd:string"/>
+                <xsd:element name="transactionType" type="bnk:TransactionType"/>
+                <xsd:element name="debitedAmount" type="bnk:PositiveDecimal"/>
+                <xsd:element name="availableBalance" type="bnk:NonNegativeDecimal"/>
+                <xsd:element name="currency" type="bnk:CurrencyCode"/>
+                <xsd:element name="transactionTimestamp" type="xsd:dateTime"/>
+                <xsd:element name="status" type="xsd:string"/>
+                <xsd:element name="message" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="FetchBalanceRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="accountNumber" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="FetchBalanceResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="accountNumber" type="xsd:string"/>
+                <xsd:element name="customerName" type="xsd:string"/>
+                <xsd:element name="accountType" type="bnk:AccountType"/>
+                <xsd:element name="availableBalance" type="bnk:NonNegativeDecimal"/>
+                <xsd:element name="currency" type="bnk:CurrencyCode"/>
+                <xsd:element name="accountStatus" type="bnk:AccountStatus"/>
+                <xsd:element name="lastTransactionTimestamp" type="xsd:dateTime" minOccurs="0"/>
+                <xsd:element name="status" type="xsd:string"/>
+                <xsd:element name="message" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="GetAccountDetailsRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="accountNumber" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="GetAccountDetailsResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="accountNumber" type="xsd:string"/>
+                <xsd:element name="customerName" type="xsd:string"/>
+                <xsd:element name="email" type="xsd:string"/>
+                <xsd:element name="mobileNumber" type="xsd:string"/>
+                <xsd:element name="accountType" type="bnk:AccountType"/>
+                <xsd:element name="balance" type="bnk:NonNegativeDecimal"/>
+                <xsd:element name="currency" type="bnk:CurrencyCode"/>
+                <xsd:element name="accountStatus" type="bnk:AccountStatus"/>
+                <xsd:element name="createdDate" type="xsd:dateTime"/>
+                <xsd:element name="lastTransactionDate" type="xsd:dateTime" minOccurs="0"/>
+                <xsd:element name="status" type="xsd:string"/>
+                <xsd:element name="message" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="GetTransactionHistoryRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="accountNumber" type="xsd:string"/>
+                <xsd:element name="fromDate" type="xsd:dateTime" minOccurs="0"/>
+                <xsd:element name="toDate" type="xsd:dateTime" minOccurs="0"/>
+                <xsd:element name="transactionType" type="bnk:TransactionType" minOccurs="0"/>
+                <xsd:element name="pageNumber" type="xsd:int" default="0" minOccurs="0"/>
+                <xsd:element name="pageSize" type="xsd:int" default="20" minOccurs="0"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="TransactionRecord">
+        <xsd:sequence>
+            <xsd:element name="transactionId" type="xsd:string"/>
+            <xsd:element name="transactionReference" type="xsd:string"/>
+            <xsd:element name="transactionType" type="bnk:TransactionType"/>
+            <xsd:element name="amount" type="bnk:PositiveDecimal"/>
+            <xsd:element name="availableBalance" type="bnk:NonNegativeDecimal"/>
+            <xsd:element name="currency" type="bnk:CurrencyCode"/>
+            <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="timestamp" type="xsd:dateTime"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="GetTransactionHistoryResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="accountNumber" type="xsd:string"/>
+                <xsd:element name="transactions" type="bnk:TransactionRecord" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="totalCount" type="xsd:int"/>
+                <xsd:element name="pageNumber" type="xsd:int"/>
+                <xsd:element name="pageSize" type="xsd:int"/>
+                <xsd:element name="status" type="xsd:string"/>
+                <xsd:element name="message" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>
