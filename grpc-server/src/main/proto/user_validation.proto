@@ -11,8 +11,10 @@ message UserRequest{
 
 message UserResponse{
   bool status = 1;
+  int32 value = 2;
 }
 
 service UserValidationService{
   rpc isUserExists(UserRequest) returns (UserResponse);
+  rpc subscribeUser(UserRequest) returns (stream UserResponse);
 }

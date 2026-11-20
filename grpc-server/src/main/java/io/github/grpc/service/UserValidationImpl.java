@@ -3,10 +3,14 @@ package io.github.grpc.service;
 import io.github.grpc.dto.UserRequest;
 import io.github.grpc.dto.UserResponse;
 import io.github.grpc.dto.UserValidationServiceGrpc;
+import io.grpc.Status;
+import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import org.springframework.grpc.server.service.GrpcService;
 
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @GrpcService
 public class UserValidationImpl extends UserValidationServiceGrpc.UserValidationServiceImplBase {
@@ -27,5 +31,36 @@ public class UserValidationImpl extends UserValidationServiceGrpc.UserValidation
                 .build();
         responseObserver.onNext(build);
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public void subscribeUser(UserRequest request, StreamObserver<UserResponse> responseObserver) {
+        ServerCallStreamObserver<UserResponse> observer = (ServerCallStreamObserver<UserResponse>) responseObserver;
+        int id = request.getId();
+        Thread.ofVirtual().start(() -> {
+            try {
+                for (int i = 1; i <= 10; i++) {
+                    if (observer.isCancelled()) {
+                        System.out.println("Client cancelled: " + id);
+                        return;
+                    }
+                    UserResponse response = UserResponse.newBuilder()
+                            .setStatus(true)
+                            .setValue(new Random().nextInt(200))
+                            .build();
+                    observer.onNext(response);
+                    System.out.println("Sent update: " + i);
+                    TimeUnit.SECONDS.sleep(1);
+                }
+                if (!observer.isCancelled()) {
+                    observer.onCompleted();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                if (!observer.isCancelled()) {
+                    observer.onError(Status.CANCELLED.withDescription("Streaming interrupted").asRuntimeException());
+                }
+            }
+        });
     }
 }
