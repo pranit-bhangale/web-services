@@ -1,0 +1,18 @@
+syntax = "proto3";
+package validation;
+
+option java_multiple_files = true;
+option java_package = "io.github.grpc.dto";
+option java_outer_classname = "UserValidationProto";
+
+message UserRequest{
+  int32 id = 1;
+}
+
+message UserResponse{
+  bool status = 1;
+}
+
+service UserValidationService{
+  rpc isUserExists(UserRequest) returns (UserResponse);
+}
