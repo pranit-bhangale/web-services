@@ -1,20 +1,40 @@
 syntax = "proto3";
+
 package validation;
 
 option java_multiple_files = true;
 option java_package = "io.github.grpc.dto";
 option java_outer_classname = "UserValidationProto";
 
-message UserRequest{
+message UserRequest {
   int32 id = 1;
 }
 
-message UserResponse{
+message UserResponse {
   bool status = 1;
   int32 value = 2;
 }
 
-service UserValidationService{
+message UserBatchRequest {
+  int32 id = 1;
+}
+
+message UserBatchResponse {
+  bool status = 1;
+  string message = 2;
+}
+
+service UserValidationService {
+
+  // Unary RPC
   rpc isUserExists(UserRequest) returns (UserResponse);
+
+  // Server-side streaming
   rpc subscribeUser(UserRequest) returns (stream UserResponse);
+
+  // Client-side streaming
+  rpc validateUsers(stream UserBatchRequest) returns (UserBatchResponse);
+
+  // Bidirectional streaming
+  rpc validateUsersBidirectional(stream UserBatchRequest) returns (stream UserBatchResponse);
 }

@@ -18,14 +18,16 @@ public class GrpcClientApplication implements CommandLineRunner {
         SpringApplication.run(GrpcClientApplication.class, args);
     }
 
+
     @Override
     public void run(String... args) throws Exception {
-
-        IO.println("gRPC Client Response: "
-                + this.service.getUserResponse(1));
-
-        IO.println("Starting gRPC Client Stream...");
-
-        this.service.subscribe(2);
+        IO.println("\n========== UNARY RPC ==========");
+        IO.println("Response: " + service.getUserResponse(1));
+        IO.println("\n========== SERVER STREAMING ==========");
+        service.subscribe(2);
+        IO.println("\n========== CLIENT STREAMING ==========");
+        service.validateUsers();
+        IO.println("\n========== BIDIRECTIONAL STREAMING ==========");
+        service.validateUsersBidirectional();
     }
 }
